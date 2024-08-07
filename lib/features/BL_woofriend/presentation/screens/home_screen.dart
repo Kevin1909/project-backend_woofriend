@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:woofriend/config/theme/app_theme.dart';
 import 'package:woofriend/features/BL_woofriend/presentation/views/pets_view.dart';
-import 'package:woofriend/features/widgets/widget.dart';
+import 'package:woofriend/features/shared/shared.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -109,12 +109,15 @@ class CustomButton extends StatelessWidget {
   final String assetIcon;
   final Size sizeIcon;
   final Color color;
+  final void Function()? ontap;
 
-  const CustomButton(
-      {super.key,
-      required this.assetIcon,
-      required this.sizeIcon,
-      this.color = Colors.black});
+  const CustomButton({
+    super.key,
+    required this.assetIcon,
+    required this.sizeIcon,
+    this.color = Colors.black, 
+    this.ontap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -124,6 +127,7 @@ class CustomButton extends StatelessWidget {
       child: Material(
         color: backgroundColorAppBar,
         child: InkWell(
+          onTap: ontap,
           splashColor: const Color.fromARGB(255, 150, 14, 14),
           child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),

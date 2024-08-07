@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:woofriend/features/widgets/widget.dart';
+import 'package:woofriend/features/shared/shared.dart';
 
 class PetsScreen extends StatelessWidget {
   const PetsScreen({super.key});

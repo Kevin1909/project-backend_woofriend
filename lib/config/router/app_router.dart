@@ -1,65 +1,70 @@
-/*import 'package:go_router/go_router.dart';
-import 'package:widgets_app/presentation/screens/screens.dart';
 
-// GoRouter configuration
-final appRouter = GoRouter(
-  initialLocation: '/',
-  routes: [
+import 'package:go_router/go_router.dart';
+import 'package:riverpod/riverpod.dart';
+import 'package:woofriend/features/BL_woofriend/presentation/screens/home_screen.dart';
+import 'package:woofriend/features/auth/presentation/screen/screens.dart';
 
-    GoRoute(
-      path: '/',
-      builder: (context, state) => const HomeScreen(),
-    ),
 
-    GoRoute(
-      path: '/buttons',
-      builder: (context, state) => const ButtonsScreen(),
-    ),
+import '../../features/auth/presentation/providers/auth_provider.dart';
+import 'app_router_notifier.dart';
 
-    GoRoute(
-      path: '/cards',
-      builder: (context, state) => const CardsScreen(),
-    ),
+final goRouterProvider = Provider((ref) {
 
-    GoRoute(
-      path: '/progress',
-      builder: (context, state) => const ProgressScreen(),
-    ),
+  final goRouterNotifier = ref.read(goRouterNotifierProvider);
 
-    GoRoute(
-      path: '/snackbars',
-      builder: (context, state) => const SnackbarScreen(),
-    ),
+  return GoRouter(
+    initialLocation: '/splash',
+    refreshListenable: goRouterNotifier,
+    routes: [
+      ///* Primera pantalla
+      GoRoute(
+        path: '/splash',
+        builder: (context, state) => const CheckAuthStatusScreen(),
+      ),
 
-    GoRoute(
-      path: '/animated',
-      builder: (context, state) => const AnimatedScreen(),
-    ),
+      ///* Auth Routes
+      GoRoute(
+        path: '/login',
+        builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/register',
+        builder: (context, state) => const RegisterScreen(),
+      ),
+      GoRoute(
+        path: '/bussiness-register',
+        builder: (context, state) => const BussinnesRegisterScreen(),
+      ),
 
-    GoRoute(
-      path: '/ui-controls',
-      builder: (context, state) => const UiControlsScreen(),
-    ),
+      ///* Product Routes
+      GoRoute(
+        path: '/',
+        builder: (context, state) => const HomeScreen(),
+      ),
+      
+    ],
 
-    GoRoute(
-      path: '/tutorial',
-      name: AppTutorialScreen.name,
-      builder: (context, state) => const AppTutorialScreen(),
-    ),
+    redirect: (context, state) {
+      
+      final isGoingTo = state.matchedLocation;
+      final authStatus = goRouterNotifier.authStatus;
 
-    GoRoute(
-      path: '/infinite',
-      builder: (context, state) => const InfiniteScrollScreen(),
-    ),
+      if ( isGoingTo == '/splash' && authStatus == AuthStatus.checking ) return null;
 
-     GoRoute(
-      path: '/counter-river',
-      builder: (context, state) => const CounterScreen(),
-    ),
+      if ( authStatus == AuthStatus.notAuthenticated ) {
+        if ( isGoingTo == '/login' || isGoingTo == '/register' ) return null;
 
-    GoRoute(
-      path: '/theme-changer',
-      builder: (context, state) => const ThemeChangerScreen(),
-    ),
-  ],
-);*/
+        return '/login';
+      }
+
+      if ( authStatus == AuthStatus.authenticated ) {
+        if ( isGoingTo == '/login' || isGoingTo == '/register' || isGoingTo == '/splash' || isGoingTo == '/bussiness-register' ){
+           return '/';
+        }
+      }
+
+
+      return null;
+    },
+  );
+});

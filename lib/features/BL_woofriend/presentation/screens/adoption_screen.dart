@@ -25,10 +25,10 @@ class AdoptionScreen extends StatelessWidget {
                     },
                     icon: const Icon(Icons.arrow_back_rounded,
                         size: 40, color: Colors.white)),
-                const Spacer(flex: 1),
+                /*const Spacer(flex: 1),
                 Text('Crear cuenta',
-                    style: textStyle.titleLarge?.copyWith(color: Colors.white)),
-                const Spacer(flex: 2),
+                    style: textStyle.titleLarge?.copyWith(color: Colors.white))
+                const Spacer(flex: 2),*/
               ],
             ),
             const SizedBox(

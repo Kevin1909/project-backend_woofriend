@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:woofriend/features/widgets/widget.dart';
+import 'package:woofriend/features/shared/shared.dart';
 
 class CustomAppbar extends StatelessWidget {
   const CustomAppbar({super.key});

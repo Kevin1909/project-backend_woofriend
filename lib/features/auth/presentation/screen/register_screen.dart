@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:woofriend/config/theme/app_theme.dart';
 
-import 'package:woofriend/features/widgets/widget.dart';
+import 'package:woofriend/features/shared/shared.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
