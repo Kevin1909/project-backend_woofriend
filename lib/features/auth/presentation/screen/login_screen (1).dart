@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:woofriend/config/theme/app_theme.dart';
 
 import 'package:woofriend/features/shared/shared.dart';
+
+import '../providers/providers.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    const background = colorPrimaryTheme;
     final size = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
+        backgroundColor: background,
         body: IconBackground(
             child: SingleChildScrollView(
           physics: const ClampingScrollPhysics(),
@@ -29,7 +35,7 @@ class LoginScreen extends StatelessWidget {
               height: 60,
             ),
             Container(
-              height: size.height - 280,
+              height: size.height - 250,
               width: double.infinity,
               margin: const EdgeInsets.all(20.0),
               decoration: const BoxDecoration(
@@ -44,11 +50,54 @@ class LoginScreen extends StatelessWidget {
   }
 }
 
-class _LoginForm extends StatelessWidget {
+class _LoginForm extends ConsumerWidget {
   const _LoginForm();
 
+  void showSnackbar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  void openDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFFF8F7F7),
+        actionsAlignment: MainAxisAlignment.spaceAround,
+        icon: const Icon(Icons.pets_rounded),
+        title: const Text('¿Cómo te quieres registrar?'),
+        contentTextStyle: const TextStyle(
+          fontStyle: FontStyle.normal,
+          color: Colors.black,
+        ),
+        content: const Text(
+          "Registrarse como:",
+        ),
+        actions: [
+          TextButton(
+              style: const ButtonStyle(
+                  backgroundColor: MaterialStatePropertyAll(Colors.black12)),
+              onPressed: () => context.push('/petlover'),
+              child: const Text('Petlover')),
+          TextButton(
+              style: const ButtonStyle(
+                  backgroundColor: MaterialStatePropertyAll(Colors.black12)),
+              onPressed: () => context.push('/foundation'),
+              child: const Text('Fundación')),
+        ],
+      ),
+    );
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final loginForm = ref.watch(loginFormProvider);
+    ref.listen(authProvider, (previous, next) {
+      if (next.errorMessage.isEmpty) return;
+      showSnackbar(context, next.errorMessage);
+    });
+
     final textStyle = Theme.of(context).textTheme;
 
     return Padding(
@@ -62,16 +111,22 @@ class _LoginForm extends StatelessWidget {
           const SizedBox(
             height: 65,
           ),
-          const CustomTextFormField(
+          CustomTextFormField(
             label: "Correo",
             keyboardType: TextInputType.emailAddress,
+            onChanged: ref.read(loginFormProvider.notifier).onEmailChange,
+            errorMessage:
+                loginForm.isFormPosted ? loginForm.email.errorMessage : null,
           ),
           const SizedBox(
             height: 30,
           ),
-          const CustomTextFormField(
+          CustomTextFormField(
             label: "Contraseña",
             obscureText: true,
+            onChanged: ref.read(loginFormProvider.notifier).onPasswordChanged,
+            errorMessage:
+                loginForm.isFormPosted ? loginForm.password.errorMessage : null,
           ),
           const SizedBox(
             height: 20,
@@ -98,27 +153,30 @@ class _LoginForm extends StatelessWidget {
           const SizedBox(
             height: 20,
           ),
-          const SizedBox(
+          SizedBox(
             width: 150,
             height: 45,
             child: CustomFilledButton(
-                text: "Ingresar",
-                buttonColor: colorTertiaryTheme,
-                colorText: colorSecondaryTheme),
-          ),
-          const Spacer(),
-          const SizedBox(
-            width: 150,
-            height: 45,
-            child: CustomFilledButton(
-              text: "Registrarse",
+              text: "Ingresar",
               buttonColor: colorTertiaryTheme,
               colorText: colorSecondaryTheme,
+              onPressed: loginForm.isPosting
+                  ? null
+                  : ref.read(loginFormProvider.notifier).onFormSubmit,
             ),
           ),
-          const Spacer(
-            flex: 2,
-          )
+          const SizedBox(
+            height: 20,
+          ),
+          SizedBox(
+            width: 150,
+            height: 45,
+            child: CustomFilledButton(
+                text: "Registrarse",
+                buttonColor: colorTertiaryTheme,
+                colorText: colorSecondaryTheme,
+                onPressed: () => openDialog(context)),
+          ),
         ],
       ),
     );
