@@ -42,22 +42,18 @@ class AuthNotifier extends StateNotifier<AuthState> {
     // state =state.copyWith(user: user, authStatus: AuthStatus.authenticated)
   }
 
-  Future<void> registerUser(
-    String email, 
-    String password, 
-    String name,
-    String phone, 
-    String ubication, 
-    List<String> roles) async {
+  Future<bool> registerUser(Map<String, dynamic> user) async {
     await Future.delayed(const Duration(milliseconds: 500));
 
     try {
-      final user = await authRepository.register(email, password, name, phone, ubication, roles);
-      _setLoggedUser(user);
+      await authRepository.registerUpdateUser(user);
+      return true;
     } on CustomError catch (e) {
       logout(e.message);
+      return false;
     } catch (e) {
       logout('Error no controlado');
+      return false;
     }
   }
 
@@ -107,11 +103,13 @@ class AuthState {
 
   AuthState copyWith({
     AuthStatus? authStatus,
+    bool? registeredUser,
     User? user,
     String? errorMessage,
   }) =>
       AuthState(
-          authStatus: authStatus ?? this.authStatus,
-          user: user ?? this.user,
-          errorMessage: errorMessage ?? this.errorMessage);
+        authStatus: authStatus ?? this.authStatus,
+        user: user ?? this.user,
+        errorMessage: errorMessage ?? this.errorMessage,
+      );
 }
